@@ -1,7 +1,7 @@
 pipeline { 
     environment { 
-        repository = "newdeal123/argocd-app"  //docker hub id와 repository 이름
-        DOCKERHUB_CREDENTIALS = credentials('docker_credentials') // jenkins에 등록해 놓은 docker hub credentials 이름
+        repository = "newdeal123/argocd-app" 
+        DOCKERHUB_CREDENTIALS = credentials('docker_credentials') 
         dockerImage = ''
         branchName = "${env.BRANCH_NAME == 'main' ? 'staging' : env.BRANCH_NAME}"
   }
@@ -10,7 +10,6 @@ pipeline {
       stage('Building our image') { 
           steps { 
               script { 
-                  // sh "cp /var/lib/jenkins/workspace/sue_jenkins_project/build/libs/sue-member-0.0.1-SNAPSHOT.war /var/lib/jenkins/workspace/pipeline/" // war 파일을 현재 위치로 복사 
                   dockerImage = docker.build repository + ":$BUILD_NUMBER" 
                   dockerImage = docker.build repository + ":latest" 
               }
@@ -20,13 +19,13 @@ pipeline {
           steps{
             sh 'echo $branchName env.BRANCH_NAME'
             sh "echo $branchName env.BRANCH_NAME"
-              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' // docker hub 로그인
+              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' 
           }
       }
       stage('Deploy docker image') { 
           steps { 
               script {
-                sh 'docker push $repository:$BUILD_NUMBER' //docker push
+                sh 'docker push $repository:$BUILD_NUMBER'
                 sh 'docker push $repository:latest'
               } 
           }
@@ -48,7 +47,7 @@ pipeline {
       }
       stage('Cleaning up') { 
 		  steps { 
-              sh "docker rmi $repository:$BUILD_NUMBER" // docker image 제거
+              sh "docker rmi $repository:$BUILD_NUMBER" 
           }
       } 
   }
