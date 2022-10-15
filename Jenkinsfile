@@ -11,20 +11,16 @@ pipeline {
               script { 
                   // sh "cp /var/lib/jenkins/workspace/sue_jenkins_project/build/libs/sue-member-0.0.1-SNAPSHOT.war /var/lib/jenkins/workspace/pipeline/" // war 파일을 현재 위치로 복사 
                   dockerImage = docker.build repository + ":$BUILD_NUMBER" 
+                  dockerImage = docker.build repository + ":latest" 
               }
           } 
-      }
-      stage('Build image tag latest') {
-        steps{
-            sh "docker build . -t ${repository}:latest"
-        }
       }
       stage('Login'){
           steps{
               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' // docker hub 로그인
           }
       }
-      stage('Deploy our image') { 
+      stage('Deploy docker image') { 
           steps { 
               script {
                 sh 'docker push $repository:$BUILD_NUMBER' //docker push
@@ -32,6 +28,21 @@ pipeline {
               } 
           }
       } 
+      stage('Kubernetes Manifest Update') {
+        steps {
+            git credentialsId: 'argoCD-app-config-credential'
+                url: 'https://github.com/newdeal123/argoCD-app-config.git',
+                branch: 'main'
+
+            sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' deployment.yaml"
+            sh "git add deployment.yaml"
+            sh "git commit -m '[UPDATE] argoCD-app ${currentBuild.number} image versioning'"
+            sshagent(credentials: ['{k8s-manifest repository credential ID}']) {
+                sh "git remote set-url origin git@github.com:newdeal123/argoCD-app-config.git"
+                sh "git push -u origin main"
+             }
+        }
+      }
       stage('Cleaning up') { 
 		  steps { 
               sh "docker rmi $repository:$BUILD_NUMBER" // docker image 제거
