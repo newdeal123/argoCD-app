@@ -2,7 +2,11 @@ pipeline {
     environment { 
         repository = "newdeal123/argocd-app"  //docker hub id와 repository 이름
         DOCKERHUB_CREDENTIALS = credentials('docker_credentials') // jenkins에 등록해 놓은 docker hub credentials 이름
-        dockerImage = '' 
+        dockerImage = ''
+        branchName = $BRANCH_NAME
+        if($BRANCH_NAME == 'main') {
+            branchName = staging
+        }
   }
   agent any 
   stages { 
@@ -34,8 +38,8 @@ pipeline {
                 url: 'https://github.com/newdeal123/argoCD-app-config.git',
                 branch: 'main'
 
-            sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' ./develop/deployment.yaml"
-            sh "git add ./develop/deployment.yaml"
+            sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' ./$branchName/deployment.yaml"
+            sh "git add ./$branchName/deployment.yaml"
             sh "git commit -m '[UPDATE] argoCD-app ${currentBuild.number} image versioning'"
             withCredentials([usernamePassword(credentialsId: 'argoCD-app-config-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 sh "git remote set-url origin git@github.com:newdeal123/argoCD-app-config.git"
