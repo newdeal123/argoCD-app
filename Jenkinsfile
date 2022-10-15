@@ -14,6 +14,11 @@ pipeline {
               }
           } 
       }
+      stage('Build image tag latest') {
+        steps{
+            sh "docker build . -t ${repository}:latest"
+        }
+      }
       stage('Login'){
           steps{
               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' // docker hub 로그인
@@ -23,6 +28,7 @@ pipeline {
           steps { 
               script {
                 sh 'docker push $repository:$BUILD_NUMBER' //docker push
+                sh 'docker push $repository:latest'
               } 
           }
       } 
