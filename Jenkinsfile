@@ -39,9 +39,8 @@ pipeline {
             sh "git commit -m '[UPDATE] argoCD-app ${currentBuild.number} image versioning'"
             withCredentials([usernamePassword(credentialsId: 'argoCD-app-config-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 sh "git remote set-url origin git@github.com:newdeal123/argoCD-app-config.git"
-                sh "git push -u origin master"
+                sh "git push -u origin main"
              }
-            sh "git push -u origin main" 
         }
       }
       stage('Cleaning up') { 
