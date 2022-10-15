@@ -37,7 +37,7 @@ pipeline {
             sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' ./dev/deployment.yaml"
             sh "git add ./dev/deployment.yaml"
             sh "git commit -m '[UPDATE] argoCD-app ${currentBuild.number} image versioning'"
-            withCredentials([usernamePassword(credentialsId: 'rgoCD-app-config-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+            withCredentials([usernamePassword(credentialsId: 'argoCD-app-config-credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 sh "git remote set-url origin git@github.com:newdeal123/argoCD-app-config.git"
                 sh "git push -u origin master"
              }
