@@ -3,9 +3,9 @@ pipeline {
         repository = "newdeal123/argocd-app"  //docker hub id와 repository 이름
         DOCKERHUB_CREDENTIALS = credentials('docker_credentials') // jenkins에 등록해 놓은 docker hub credentials 이름
         dockerImage = ''
-        branchName = $BRANCH_NAME
+        branchName = '$BRANCH_NAME'
         if($BRANCH_NAME == 'main') {
-            branchName = staging
+            branchName = 'staging'
         }
   }
   agent any 
