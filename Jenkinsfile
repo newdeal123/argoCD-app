@@ -34,7 +34,7 @@ pipeline {
                 url: 'https://github.com/newdeal123/argoCD-app-config.git',
                 branch: 'main'
 
-            sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' deployment.yaml"
+            sh "sed -i 's/argocd-app:.*\$/argocd-app:${currentBuild.number}/g' ./dev/deployment.yaml"
             sh "git add deployment.yaml"
             sh "git commit -m '[UPDATE] argoCD-app ${currentBuild.number} image versioning'"
             sshagent(credentials: ['{k8s-manifest repository credential ID}']) {
