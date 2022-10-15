@@ -30,7 +30,7 @@ pipeline {
       } 
       stage('Kubernetes Manifest Update') {
         steps {
-            git credentialsId: 'argoCD-app-config-credential'
+            git credentialsId: 'argoCD-app-config-credential',
                 url: 'https://github.com/newdeal123/argoCD-app-config.git',
                 branch: 'main'
 
